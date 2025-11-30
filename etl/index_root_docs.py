@@ -81,7 +81,7 @@ def create_chunks(text: str, chunk_size: int = 1000, overlap: int = 200) -> List
 
 
 # Standalone function for parallel HTML extraction
-def extract_html_data(html_path: Path, data_path: Path, enable_chunking: bool = True, 
+def extract_html_data(html_path: Path, data_path: Path, enable_chunking: bool = False, 
                      chunk_size: int = 1000, chunk_overlap: int = 200) -> List[Dict]:
     """
     Extract text content from HTML file (standalone for multiprocessing)
@@ -137,8 +137,12 @@ def extract_html_data(html_path: Path, data_path: Path, enable_chunking: bool = 
         
         # Build ROOT documentation URL based on category
         filename = html_path.name
+        
+        # For macros/notebooks, try to find the corresponding source file reference
         if category == "macros":
-            doc_url = f"https://root.cern/doc/master/macros/{filename}"
+            # Macro HTML files are just renders, link to the source code instead
+            base_name = html_path.stem
+            doc_url = f"https://root.cern/doc/master/{base_name}_8cxx.html"
         elif category == "notebooks":
             doc_url = f"https://root.cern/doc/master/notebooks/{filename}"
         elif category == "pyzdoc":
@@ -149,6 +153,10 @@ def extract_html_data(html_path: Path, data_path: Path, enable_chunking: bool = 
         
         # Clean content
         content = clean_text(content)
+        
+        # Skip files with minimal content (e.g., JavaScript-only macro outputs)
+        if len(content) < 200:
+            return []
         
         # Create chunks if enabled
         if enable_chunking and len(content) > chunk_size:
