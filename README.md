@@ -7,7 +7,8 @@ A Retrieval-Augmented Generation (RAG) system for High Energy Physics (HEP) docu
 | Framework | Documents | Index Name | Documentation Type | Status |
 |-----------|-----------|------------|-------------------|--------|
 | **ROOT** | 25,804 docs (27,060 files) | `root-documentation` | Doxygen HTML | ✅ Active |
-| **Geant4** | 333 docs (373 files) | `geant4-documentation` | Sphinx HTML | ✅ Active |
+| **Geant4 Sphinx** | 333 docs (373 files) | `geant4-documentation` | Sphinx HTML (User Guides) | ✅ Active |
+| **Geant4 Doxygen** | ~8,000 docs (8,102 files) | `geant4-doxygen` | Doxygen HTML (API Reference) | ✅ Active |
 
 ## 📋 Table of Contents
 
@@ -36,14 +37,15 @@ This service provides semantic search capabilities over HEP framework documentat
 
 ### Framework Comparison
 
-| Aspect | ROOT | Geant4 |
-|--------|------|--------|
-| **Format** | Doxygen HTML | Sphinx HTML |
-| **Index** | `root-documentation` | `geant4-documentation` |
-| **HTML Containers** | `div#doc-content` | `div[role='main']`, `section` |
-| **Categories** | html, macros, pyzdoc, notebooks | app_dev, physics, installation, faq |
-| **URL Base** | `root.cern/doc/master/` | `geant4-userdoc.web.cern.ch/` |
-| **Documents** | 25,804 indexed (27,060 files) | 333 indexed (373 files) |
+| Aspect | ROOT | Geant4 Sphinx | Geant4 Doxygen |
+|--------|------|---------------|----------------|
+| **Format** | Doxygen HTML | Sphinx HTML | Doxygen HTML |
+| **Index** | `root-documentation` | `geant4-documentation` | `geant4-doxygen` |
+| **HTML Containers** | `div#doc-content` | `div[role='main']`, `section` | `div.contents` |
+| **Categories** | html, macros, pyzdoc, notebooks | app_dev, physics, installation, faq | class, struct, namespace, file |
+| **URL Base** | `root.cern/doc/master/` | `geant4-userdoc.web.cern.ch/` | `geant4.kek.jp/Reference/11.3.2/` |
+| **Documents** | 25,804 indexed (27,060 files) | 333 indexed (373 files) | ~8,000 indexed (8,102 files) |
+| **Content Type** | API Reference | User Guides & Tutorials | API Reference |
 
 ## ✨ Features
 
@@ -221,33 +223,62 @@ This will:
 
 #### 2. Index the Documentation
 
+**Sphinx Documentation (User Guides):**
+
 ```bash
 python etl/geant4/index_geant4_docs.py
 ```
 
 Expected output:
-- **Processing time**: ~10 seconds (Sphinx) + ~5 minutes (Doxygen)
-- **Documents indexed**: 333 documents from 373 files (Sphinx)
+- **Processing time**: ~10 seconds
+- **Documents indexed**: 333 documents from 373 files
+- **Success rate**: 100%
+
+**Doxygen Documentation (API Reference):**
+
+```bash
+python etl/geant4/index_geant4_doxygen.py
+```
+
+Expected output:
+- **Processing time**: ~5-10 minutes
+- **Documents indexed**: ~8,000+ documents from 8,102 files
 - **Success rate**: 100%
 
 #### 3. Search the Documentation
 
-**Interactive Mode:**
+**Sphinx Documentation (Interactive Mode):**
 
 ```bash
 python etl/geant4/search_geant4_docs.py
 ```
 
-**Command Line:**
+**Sphinx Documentation (Command Line):**
 
 ```bash
 python etl/geant4/search_geant4_docs.py "How to create a detector geometry?"
 ```
 
-**Test Suite:**
+**Doxygen Documentation (Interactive Mode):**
 
 ```bash
+python etl/geant4/search_geant4_doxygen.py
+```
+
+**Doxygen Documentation (Command Line):**
+
+```bash
+python etl/geant4/search_geant4_doxygen.py "G4Box geometry class"
+```
+
+**Test Suites:**
+
+```bash
+# Test Sphinx documentation search
 python etl/geant4/test_search.py
+
+# Test Doxygen documentation search
+python etl/geant4/test_doxygen_search.py
 ```
 
 ## 📖 Usage
