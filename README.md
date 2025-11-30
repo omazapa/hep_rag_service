@@ -196,6 +196,8 @@ python etl/root/test_search.py
 
 #### 1. Download Geant4 Documentation
 
+**Sphinx Documentation (User Guides):**
+
 ```bash
 ./etl/geant4/download_geant4_docs.sh
 ```
@@ -205,6 +207,18 @@ This will:
 - Extract to `etl/geant4/data/geant4/`
 - Process ~373 HTML files
 
+**Doxygen Documentation (API Reference):**
+
+```bash
+python etl/geant4/download_geant4_doxygen.py
+```
+
+This will:
+- Download API documentation from geant4.kek.jp/Reference/11.3.2/
+- Extract to `etl/geant4/data/geant4_doxygen/`
+- Process ~8,102 HTML files (240 MB)
+- Download class, file, and namespace documentation
+
 #### 2. Index the Documentation
 
 ```bash
@@ -212,8 +226,8 @@ python etl/geant4/index_geant4_docs.py
 ```
 
 Expected output:
-- **Processing time**: ~10 seconds
-- **Documents indexed**: 333 documents from 373 files
+- **Processing time**: ~10 seconds (Sphinx) + ~5 minutes (Doxygen)
+- **Documents indexed**: 333 documents from 373 files (Sphinx)
 - **Success rate**: 100%
 
 #### 3. Search the Documentation
