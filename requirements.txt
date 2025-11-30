@@ -1,0 +1,22 @@
+# Dependencias para el sistema RAG de ROOT
+# Instalación: pip install -r requirements.txt
+
+# Elasticsearch
+elasticsearch>=8.0.0
+
+# Embeddings y NLP
+sentence-transformers>=2.2.0
+torch
+transformers
+
+# Procesamiento de HTML
+beautifulsoup4
+lxml
+
+# Utilidades
+tqdm
+python-dotenv
+
+# Opcional: para notebooks
+jupyter
+ipykernel

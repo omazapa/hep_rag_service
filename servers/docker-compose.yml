@@ -1,0 +1,42 @@
+services:   
+   elastic_search:
+     image: docker.elastic.co/elasticsearch/elasticsearch:$ELASTIC_VERSION
+     container_name: $ELASTIC_CONTAINER_NAME
+     ports:
+      - 9200:9200
+      - 9300:9300
+     environment:
+      - ELASTIC_CONTAINER_NAME=elasticsearch
+      - ELASTIC_INTERNAL_NETWORK=true
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=colav
+      - ELASTIC_SECURITY=true
+      - ELASTIC_CPUS=$ELASTIC_CPUS
+      - ELASTIC_RAM=$ELASTIC_RAM
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=$ELASTIC_ES_JAVA_OPTS
+      - xpack.security.enabled=$ELASTIC_SECURITY
+      - xpack.security.http.ssl.enabled=false
+      - search.default_search_timeout=$ELASTIC_DEFAULT_SEARCH_TIMEOUT
+     ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+     volumes:
+      - es_data:/usr/share/elasticsearch/data
+     restart: always
+     networks:
+      - elastic
+     deploy:
+            resources:
+                limits:
+                  cpus: $ELASTIC_CPUS
+                  memory: $ELASTIC_RAM
+
+networks:
+  elastic:
+    driver: bridge
+    internal: $ELASTIC_INTERNAL_NETWORK
+volumes:
+  es_data:
