@@ -575,7 +575,8 @@ def main():
         es_host="http://localhost:9200",  # Docker: localhost:9200, K8s: localhost:30920
         index_name="root-documentation",
         model_name="sentence-transformers/all-MiniLM-L6-v2",
-        data_path="etl/data/root/master"
+        data_path="etl/data/root/master",
+        enable_chunking=False,  # Set to True to enable chunking
     )
     
     # Create index
