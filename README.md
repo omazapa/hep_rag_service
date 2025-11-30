@@ -133,18 +133,18 @@ curl http://localhost:9200
 ### 1. Download ROOT Documentation
 
 ```bash
-./etl/download_root_docs.sh
+./etl/root/download_root_docs.sh
 ```
 
 This will:
 - Download `htmlmaster.tar.gz` from root.cern
-- Extract to `etl/data/root/master/`
+- Extract to `etl/root/data/root/master/`
 - Show statistics about downloaded files
 
 ### 2. Index the Documentation
 
 ```bash
-python etl/index_root_docs.py
+python etl/root/index_root_docs.py
 ```
 
 Expected output:
@@ -157,19 +157,19 @@ Expected output:
 **Interactive Mode:**
 
 ```bash
-python etl/search_root_docs.py
+python etl/root/search_root_docs.py
 ```
 
 **Command Line:**
 
 ```bash
-python etl/search_root_docs.py "How to create a TCanvas?"
+python etl/root/search_root_docs.py "How to create a TCanvas?"
 ```
 
 **Test Suite:**
 
 ```bash
-python etl/test_search.py
+python etl/root/test_search.py
 ```
 
 ## 📖 Usage
@@ -179,7 +179,7 @@ python etl/test_search.py
 The indexer supports several configuration options:
 
 ```python
-# In index_root_docs.py
+# In etl/root/index_root_docs.py
 
 # Chunking configuration
 ENABLE_CHUNKING = True      # Enable/disable document splitting
@@ -196,7 +196,7 @@ BATCH_SIZE = 32             # Documents per embedding batch
 **1. Basic Search**
 
 ```python
-from search_root_docs import search_documents
+from etl.root.search_root_docs import search_documents
 
 results = search_documents("TTree tutorial", top_k=5)
 for result in results:
@@ -301,18 +301,20 @@ The Elasticsearch index uses:
 ```
 hep_rag_service/
 ├── etl/
-│   ├── data/
-│   │   └── root/
-│   │       └── master/          # ROOT documentation (27K+ files)
-│   │           ├── html/        # HTML documentation
-│   │           ├── macros/      # ROOT macros
-│   │           ├── notebooks/   # Jupyter notebooks
-│   │           └── pyzdoc/      # Python API docs
-│   ├── download_root_docs.sh    # Download script
-│   ├── index_root_docs.py       # Main indexing script
-│   ├── search_root_docs.py      # Search interface
-│   ├── test_search.py           # Search test suite
-│   └── test_url_generation.py   # URL validation
+│   └── root/
+│       ├── data/
+│       │   └── root/
+│       │       └── master/          # ROOT documentation (27K+ files)
+│       │           ├── html/        # HTML documentation
+│       │           ├── macros/      # ROOT macros
+│       │           ├── notebooks/   # Jupyter notebooks
+│       │           └── pyzdoc/      # Python API docs
+│       ├── download_root_docs.sh    # Download script
+│       ├── index_root_docs.py       # Main indexing script
+│       ├── search_root_docs.py      # Search interface
+│       ├── test_search.py           # Search test suite
+│       ├── test_url_generation.py   # URL validation
+│       └── validate_urls.py         # URL verification
 ├── servers/
 │   ├── docker-compose.yml       # Docker deployment
 │   └── k8s-elasticsearch.yaml   # Kubernetes deployment
@@ -327,7 +329,7 @@ hep_rag_service/
 Main class for indexing ROOT documentation.
 
 ```python
-from index_root_docs import ROOTDocumentationIndexer
+from etl.root.index_root_docs import ROOTDocumentationIndexer
 
 indexer = ROOTDocumentationIndexer(
     es_host="localhost",
@@ -337,7 +339,7 @@ indexer = ROOTDocumentationIndexer(
 
 # Index all documents
 indexer.index_all_documents(
-    data_path="etl/data/root/master",
+    data_path="etl/root/data/root/master",
     enable_chunking=True,
     chunk_size=1000,
     chunk_overlap=200
@@ -354,7 +356,7 @@ indexer.index_all_documents(
 ### Search Functions
 
 ```python
-from search_root_docs import search_documents
+from etl.root.search_root_docs import search_documents
 
 # Basic search
 results = search_documents(
@@ -439,13 +441,13 @@ pip install torch --index-url https://download.pytorch.org/whl/cu118
 **Test URL Generation:**
 
 ```bash
-python etl/test_url_generation.py
+python etl/root/test_url_generation.py
 ```
 
 **Test Search:**
 
 ```bash
-python etl/test_search.py
+python etl/root/test_search.py
 ```
 
 **Check Index Statistics:**
@@ -525,7 +527,7 @@ Interfaz de búsqueda que implementa:
 
 ## 📊 Estructura de Datos
 
-Los datos de ROOT están en `etl/data/root/master/`:
+Los datos de ROOT están en `etl/root/data/root/master/`:
 ```
 master/
 ├── html/        # Documentación HTML Doxygen (~20k archivos)
@@ -537,7 +539,7 @@ master/
 ## 🔍 Ejemplo de Búsqueda
 
 ```python
-from index_root_docs import ROOTDocumentationIndexer
+from etl.root.index_root_docs import ROOTDocumentationIndexer
 
 indexer = ROOTDocumentationIndexer()
 results = indexer.search("How to create a histogram?", k=5)

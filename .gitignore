@@ -52,7 +52,7 @@ htmlcov/
 *.out
 
 # Data directories
-etl/data/
+etl/root/data/
 
 # Environment variables
 .env
