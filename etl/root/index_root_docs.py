@@ -104,16 +104,62 @@ def extract_html_data(html_path: Path, data_path: Path, enable_chunking: bool = 
         title = soup.find('title')
         title_text = title.get_text().strip() if title else html_path.stem
         
-        # Remove scripts, styles and navigation
-        for tag in soup(['script', 'style', 'nav', 'header', 'footer']):
+        # Remove unwanted elements first
+        for tag in soup(['script', 'style', 'nav', 'header', 'footer', 'iframe', 
+                        'noscript', 'form', 'input', 'button']):
             tag.decompose()
         
-        # Extract main content
-        content_div = soup.find('div', {'id': 'doc-content'})
-        if content_div:
-            content = content_div.get_text(separator=' ', strip=True)
-        else:
-            content = soup.get_text(separator=' ', strip=True)
+        # Remove Doxygen navigation and UI elements (but keep memdoc/memproto for method extraction)
+        for class_name in ['navpath', 'navtab', 'directory', 'tabs', 'tabs2', 'tabs3',
+                          'search', 'searchresults', 'header', 'headertitle', 
+                          'dynheader', 'dyncontent']:
+            for tag in soup.find_all(class_=class_name):
+                tag.decompose()
+        
+        # Remove SVG elements and their warnings
+        for svg in soup.find_all(['svg', 'map', 'area']):
+            svg.decompose()
+            
+        # Remove "Loading..." and similar UI messages
+        for element in soup.find_all(text=lambda text: text and (
+            'Loading...' in text or 
+            'Searching...' in text or 
+            'No Matches' in text or
+            'This browser is not able to show SVG' in text or
+            'try Firefox, Chrome, Safari' in text
+        )):
+            element.extract()
+        
+        # Extract structured Doxygen content - COMPLETE VERSION
+        # Strategy: Extract all text preserving method/attribute information
+        
+        # Try main content containers
+        content_div = (
+            soup.find('div', {'id': 'doc-content'}) or
+            soup.find('div', {'class': 'contents'}) or
+            soup.find('body')
+        )
+        
+        if not content_div:
+            return []
+        
+        # Get ALL text content from the main div
+        # This approach is simpler and captures everything
+        content = content_div.get_text(separator=' ', strip=True)
+        
+        # Remove copyright notices (can vary per file)
+        # Match patterns like: Copyright (C) YYYY, Copyright YYYY-YYYY, etc.
+        import re
+        copyright_patterns = [
+            r'Copyright\s*\(C\)\s*\d{4}(?:-\d{4})?[^.]*\.',
+            r'Copyright\s+\d{4}(?:-\d{4})?[^.]*\.',
+            r'\*\s*Copyright[^*]*\*',
+            r'All rights reserved\.?',
+            r'For the licensing terms see[^.]*\.',
+            r'For the list of contributors see[^.]*\.'
+        ]
+        for pattern in copyright_patterns:
+            content = re.sub(pattern, '', content, flags=re.IGNORECASE)
         
         # Extract code snippets
         code_snippets = []
@@ -162,7 +208,8 @@ def extract_html_data(html_path: Path, data_path: Path, enable_chunking: bool = 
         if enable_chunking and len(content) > chunk_size:
             content_chunks = create_chunks(content, chunk_size, chunk_overlap)
         else:
-            content_chunks = [content[:10000]]  # Single chunk, limit to 10k
+            # NO LIMIT - store complete content
+            content_chunks = [content]
         
         # Generate document ID base
         doc_id_base = hashlib.md5(str(html_path).encode()).hexdigest()
@@ -202,7 +249,7 @@ class ROOTDocumentationIndexer:
         es_host: str = "http://localhost:9200",
         index_name: str = "root-documentation",
         model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
-        data_path: str = "etl/data/root/master",
+        data_path: str = "data/root/master",
         enable_chunking: bool = True,
         chunk_size: int = 1000,
         chunk_overlap: int = 200
@@ -575,7 +622,7 @@ def main():
         es_host="http://localhost:9200",  # Docker: localhost:9200, K8s: localhost:30920
         index_name="root-documentation",
         model_name="sentence-transformers/all-MiniLM-L6-v2",
-        data_path="etl/data/root/master",
+        data_path="data/root/master",
         enable_chunking=False,  # Set to True to enable chunking
     )
     

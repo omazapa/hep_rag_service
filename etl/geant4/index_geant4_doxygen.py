@@ -106,25 +106,61 @@ def extract_doxygen_html_data(html_path: Path, data_path: Path, base_url: str,
         title = soup.find('title')
         title_text = title.get_text().strip() if title else html_path.stem
         
-        # Remove scripts, styles and navigation
-        for tag in soup(['script', 'style', 'nav', 'header', 'footer', 'aside']):
+        # Remove unwanted elements first
+        for tag in soup(['script', 'style', 'nav', 'header', 'footer', 'iframe', 
+                        'noscript', 'form', 'input', 'button', 'aside']):
             tag.decompose()
         
-        # Extract main content - Doxygen specific
-        # Try different Doxygen content containers
+        # Remove Doxygen navigation and UI elements (but keep memdoc/memproto for method extraction)
+        for class_name in ['navpath', 'navtab', 'directory', 'tabs', 'tabs2', 'tabs3',
+                          'search', 'searchresults', 'header', 'headertitle', 
+                          'dynheader', 'dyncontent']:
+            for tag in soup.find_all(class_=class_name):
+                tag.decompose()
+        
+        # Remove SVG elements and their warnings
+        for svg in soup.find_all(['svg', 'map', 'area']):
+            svg.decompose()
+            
+        # Remove "Loading..." and similar UI messages
+        for element in soup.find_all(text=lambda text: text and (
+            'Loading...' in text or 
+            'Searching...' in text or 
+            'No Matches' in text or
+            'This browser is not able to show SVG' in text or
+            'try Firefox, Chrome, Safari' in text
+        )):
+            element.extract()
+        
+        # Extract structured Doxygen content - COMPLETE VERSION
+        # Strategy: Extract all text preserving method/attribute information
+        
+        # Try main content containers
         content_div = (
             soup.find('div', {'class': 'contents'}) or
             soup.find('div', {'id': 'doc-content'}) or
-            soup.find('div', {'class': 'textblock'}) or
-            soup.find('div', {'class': 'fragment'})
+            soup.find('body')
         )
         
-        if content_div:
-            content = content_div.get_text(separator=' ', strip=True)
-        else:
-            # Fallback: get body content
-            body = soup.find('body')
-            content = body.get_text(separator=' ', strip=True) if body else soup.get_text(separator=' ', strip=True)
+        if not content_div:
+            return []
+        
+        # Get ALL text content from the main div
+        # This approach is simpler and captures everything
+        content = content_div.get_text(separator=' ', strip=True)
+        
+        # Remove Geant4 license/copyright block (very different from ROOT)
+        # Geant4 has a long license header (~24 lines) in source files
+        import re
+        
+        # Remove the full Geant4 license block (from "License and Disclaimer" to end of license)
+        # This matches the entire license header that appears in Geant4 source files
+        geant4_license_pattern = r'(?:\/\/\s*\**\s*)?License and Disclaimer.*?acceptance of all terms of the Geant4 Software license\.\s*(?:\/\/\s*\**\s*)?'
+        content = re.sub(geant4_license_pattern, '', content, flags=re.DOTALL | re.IGNORECASE)
+        
+        # Also remove shorter copyright mentions
+        content = re.sub(r'The\s+Geant4\s+software\s+is\s+copyright\s+of\s+the\s+Copyright\s+Holders.*?\.', '', content, flags=re.IGNORECASE)
+        content = re.sub(r'copyright\s+of\s+the\s+Copyright\s+Holders\s+of\s+the\s+Geant4\s+Collaboration.*?\.', '', content, flags=re.IGNORECASE)
         
         # Extract code snippets
         code_snippets = []
@@ -176,7 +212,8 @@ def extract_doxygen_html_data(html_path: Path, data_path: Path, base_url: str,
         if enable_chunking and len(content) > chunk_size:
             content_chunks = create_chunks(content, chunk_size, chunk_overlap)
         else:
-            content_chunks = [content[:10000]]  # Single chunk, limit to 10k
+            # NO LIMIT - store complete content
+            content_chunks = [content]
         
         # Generate document ID base
         doc_id_base = hashlib.md5(str(html_path).encode()).hexdigest()
