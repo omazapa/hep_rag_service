@@ -53,6 +53,7 @@ htmlcov/
 
 # Data directories
 etl/root/data/
+etl/geant4/data/
 
 # Environment variables
 .env

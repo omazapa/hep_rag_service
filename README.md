@@ -1,6 +1,13 @@
 # HEP RAG Service
 
-A Retrieval-Augmented Generation (RAG) system for High Energy Physics (HEP) documentation, specifically designed to index and search ROOT framework documentation using Elasticsearch and semantic embeddings.
+A Retrieval-Augmented Generation (RAG) system for High Energy Physics (HEP) documentation, specifically designed to index and search ROOT and Geant4 framework documentation using Elasticsearch and semantic embeddings.
+
+## 📚 Supported Frameworks
+
+| Framework | Documents | Index Name | Documentation Type | Status |
+|-----------|-----------|------------|-------------------|--------|
+| **ROOT** | 25,804 docs (27,060 files) | `root-documentation` | Doxygen HTML | ✅ Active |
+| **Geant4** | 333 docs (373 files) | `geant4-documentation` | Sphinx HTML | ✅ Active |
 
 ## 📋 Table of Contents
 
@@ -20,12 +27,23 @@ A Retrieval-Augmented Generation (RAG) system for High Energy Physics (HEP) docu
 
 ## 🎯 Overview
 
-This service provides semantic search capabilities over the ROOT framework documentation (~27,000 HTML files) using:
+This service provides semantic search capabilities over HEP framework documentation using:
 
 - **Elasticsearch 8.17.4** for storage and hybrid search (vector + text)
 - **sentence-transformers/all-MiniLM-L6-v2** for generating 384-dimensional embeddings
 - **Parallel processing** with 20 CPU cores for fast indexing
 - **Intelligent chunking** to split large documents into manageable pieces
+
+### Framework Comparison
+
+| Aspect | ROOT | Geant4 |
+|--------|------|--------|
+| **Format** | Doxygen HTML | Sphinx HTML |
+| **Index** | `root-documentation` | `geant4-documentation` |
+| **HTML Containers** | `div#doc-content` | `div[role='main']`, `section` |
+| **Categories** | html, macros, pyzdoc, notebooks | app_dev, physics, installation, faq |
+| **URL Base** | `root.cern/doc/master/` | `geant4-userdoc.web.cern.ch/` |
+| **Documents** | 25,804 indexed (27,060 files) | 333 indexed (373 files) |
 
 ## ✨ Features
 
@@ -130,7 +148,9 @@ curl http://localhost:9200
 
 ## 🚀 Quick Start
 
-### 1. Download ROOT Documentation
+### ROOT Framework
+
+#### 1. Download ROOT Documentation
 
 ```bash
 ./etl/root/download_root_docs.sh
@@ -141,7 +161,7 @@ This will:
 - Extract to `etl/root/data/root/master/`
 - Show statistics about downloaded files
 
-### 2. Index the Documentation
+#### 2. Index the Documentation
 
 ```bash
 python etl/root/index_root_docs.py
@@ -149,10 +169,10 @@ python etl/root/index_root_docs.py
 
 Expected output:
 - **Processing time**: ~15 minutes
-- **Documents indexed**: ~342,000 (chunks from 27,060 files)
+- **Documents indexed**: ~25,804 documents from 27,060 files
 - **Success rate**: 100%
 
-### 3. Search the Documentation
+#### 3. Search the Documentation
 
 **Interactive Mode:**
 
@@ -170,6 +190,50 @@ python etl/root/search_root_docs.py "How to create a TCanvas?"
 
 ```bash
 python etl/root/test_search.py
+```
+
+### Geant4 Framework
+
+#### 1. Download Geant4 Documentation
+
+```bash
+./etl/geant4/download_geant4_docs.sh
+```
+
+This will:
+- Download HTML documentation from geant4-userdoc.web.cern.ch
+- Extract to `etl/geant4/data/geant4/`
+- Process ~373 HTML files
+
+#### 2. Index the Documentation
+
+```bash
+python etl/geant4/index_geant4_docs.py
+```
+
+Expected output:
+- **Processing time**: ~10 seconds
+- **Documents indexed**: 333 documents from 373 files
+- **Success rate**: 100%
+
+#### 3. Search the Documentation
+
+**Interactive Mode:**
+
+```bash
+python etl/geant4/search_geant4_docs.py
+```
+
+**Command Line:**
+
+```bash
+python etl/geant4/search_geant4_docs.py "How to create a detector geometry?"
+```
+
+**Test Suite:**
+
+```bash
+python etl/geant4/test_search.py
 ```
 
 ## 📖 Usage
