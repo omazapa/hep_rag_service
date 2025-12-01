@@ -610,42 +610,34 @@ This project is part of CERN's ROOT framework ecosystem. Please refer to ROOT's 
 
 **Built with ❤️ for the HEP community**
 
-- Soporta ~28,000 documentos de ROOT
+## 🎯 Embedding Model
 
-### `etl/search_root_docs.py`
-Interfaz de búsqueda que implementa:
-- Búsqueda híbrida (vectorial + texto)
-- Modo interactivo
-- Ejemplos predefinidos
+**Recommended:** `sentence-transformers/all-MiniLM-L6-v2`
 
-## 🎯 Modelo de Embeddings
+**Features:**
+- 384 dimensions
+- 80MB size
+- Excellent for technical documentation
+- Precise semantic search
+- Free and open source
 
-**Recomendado:** `sentence-transformers/all-MiniLM-L6-v2`
+**Alternatives:**
+- `text-embedding-3-small` (OpenAI) - Better quality, requires API key
+- `all-mpnet-base-v2` - More accurate but slower
+- `paraphrase-MiniLM-L6-v2` - Optimized for paraphrasing
 
-**Características:**
-- 384 dimensiones
-- 80MB de tamaño
-- Excelente para documentación técnica
-- Búsqueda semántica precisa
-- Gratis y open source
+## 📊 Data Structure
 
-**Alternativas:**
-- `text-embedding-3-small` (OpenAI) - Mejor calidad, requiere API key
-- `all-mpnet-base-v2` - Más preciso pero más lento
-- `paraphrase-MiniLM-L6-v2` - Optimizado para paráfrasis
-
-## 📊 Estructura de Datos
-
-Los datos de ROOT están en `etl/root/data/root/master/`:
+ROOT data is located in `etl/root/data/root/master/`:
 ```
 master/
-├── html/        # Documentación HTML Doxygen (~20k archivos)
-├── macros/      # Ejemplos de macros C++
+├── html/        # Doxygen HTML documentation (~20k files)
+├── macros/      # C++ macro examples
 ├── notebooks/   # Jupyter notebooks
-└── pyzdoc/      # Documentación Python
+└── pyzdoc/      # Python documentation
 ```
 
-## 🔍 Ejemplo de Búsqueda
+## 🔍 Search Example
 
 ```python
 from etl.root.index_root_docs import ROOTDocumentationIndexer
@@ -657,38 +649,38 @@ for result in results:
     print(f"{result['title']}: {result['url']}")
 ```
 
-## 🛠️ Configuración
+## 🛠️ Configuration
 
-### Variables de Elasticsearch
+### Elasticsearch Variables
 
 - **Host:** `http://localhost:30920` (NodePort)
-- **Índice:** `root-documentation`
-- **Timeout:** 60 segundos
+- **Index:** `root-documentation`
+- **Timeout:** 60 seconds
 
-### Parámetros de Indexación
+### Indexing Parameters
 
-- **Batch size:** 100 documentos
-- **Threads:** 4 workers paralelos
-- **Max content:** 10,000 caracteres por documento
-- **Max snippets:** 5 por documento
+- **Batch size:** 100 documents
+- **Threads:** 4 parallel workers
+- **Max content:** 10,000 characters per document
+- **Max snippets:** 5 per document
 
-## 📈 Rendimiento
+## 📈 Performance
 
-- **Documentos:** ~28,000
-- **Tiempo de indexación:** ~30-60 minutos (depende del hardware)
-- **Búsqueda:** < 1 segundo
-- **Memoria requerida:** ~4Gi para Elasticsearch
+- **Documents:** ~28,000
+- **Indexing time:** ~30-60 minutes (depends on hardware)
+- **Search:** < 1 second
+- **Required memory:** ~4Gi for Elasticsearch
 
 ## 🔧 Troubleshooting
 
-### Elasticsearch no inicia
+### Elasticsearch won't start
 ```bash
 kubectl logs -n elasticsearch deployment/elasticsearch
 kubectl describe pod -n elasticsearch
 ```
 
-### Error de memoria
-Ajusta los recursos en `k8s-elasticsearch.yaml`:
+### Memory error
+Adjust resources in `k8s-elasticsearch.yaml`:
 ```yaml
 resources:
   requests:
@@ -697,20 +689,13 @@ resources:
     memory: "8Gi"
 ```
 
-### Puerto no accesible
-Verifica el servicio NodePort:
+### Port not accessible
+Verify NodePort service:
 ```bash
 kubectl get svc -n elasticsearch
 ```
 
-## 📝 Próximos Pasos
 
-1. **Integrar LLM:** Conectar con GPT/Claude para respuestas generadas
-2. **Fine-tuning:** Ajustar embeddings para vocabulario HEP
-3. **UI Web:** Crear interfaz web para búsqueda
-4. **API REST:** Exponer endpoints de búsqueda
-5. **Métricas:** Agregar monitoreo y analytics
+## 📄 License
 
-## 📄 Licencia
-
-MIT License - CERN ROOT Documentation RAG System
+MIT License - HEP Documentation RAG System (Prototype)
