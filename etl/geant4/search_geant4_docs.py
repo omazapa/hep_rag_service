@@ -21,9 +21,7 @@ def search_geant4(query: str, k: int = 5):
     print("=" * 80)
 
     # Initialize indexer
-    indexer = Geant4DocumentationIndexer(
-        es_host="http://localhost:9200", index_name="geant4-documentation"
-    )
+    indexer = Geant4DocumentationIndexer(es_host="http://localhost:9200", index_name="geant4-documentation")
 
     print(f"\nQuery: {query}")
     print("-" * 80)
@@ -55,9 +53,7 @@ def search_geant4(query: str, k: int = 5):
 def interactive_search():
     """Interactive search mode"""
 
-    indexer = Geant4DocumentationIndexer(
-        es_host="http://localhost:9200", index_name="geant4-documentation"
-    )
+    indexer = Geant4DocumentationIndexer(es_host="http://localhost:9200", index_name="geant4-documentation")
 
     print("=" * 80)
     print("🔍 Geant4 Documentation - Interactive Search")

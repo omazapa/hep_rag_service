@@ -21,9 +21,7 @@ def test_search(query: str, k: int = 5):
     print("=" * 80)
 
     # Initialize indexer
-    indexer = ROOTDocumentationIndexer(
-        es_host="http://localhost:9200", index_name="root-documentation"
-    )
+    indexer = ROOTDocumentationIndexer(es_host="http://localhost:9200", index_name="root-documentation")
 
     print(f"\nQuery: {query}")
     print("-" * 80)

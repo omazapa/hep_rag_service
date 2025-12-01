@@ -141,13 +141,9 @@ def test_method_extraction():
 
     # Count documents with structured content
     try:
-        with_members = es.count(
-            index="root-documentation", body={"query": {"match": {"content": "MEMBERS:"}}}
-        )
+        with_members = es.count(index="root-documentation", body={"query": {"match": {"content": "MEMBERS:"}}})
 
-        with_signature = es.count(
-            index="root-documentation", body={"query": {"match": {"content": "SIGNATURE:"}}}
-        )
+        with_signature = es.count(index="root-documentation", body={"query": {"match": {"content": "SIGNATURE:"}}})
 
         total = es.count(index="root-documentation")
 

@@ -73,9 +73,7 @@ def main():
         print(f"Using Geant4 version: {version}")
     else:
         print(f"Using default Geant4 version: {version}")
-        print(
-            f"(To use a different version, run: python {os.path.basename(sys.argv[0])} <version>)"
-        )
+        print(f"(To use a different version, run: python {os.path.basename(sys.argv[0])} <version>)")
 
     # Set up URLs and paths
     BASE_URL = f"https://geant4.kek.jp/Reference/{version}/"

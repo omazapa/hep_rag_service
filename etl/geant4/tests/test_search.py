@@ -9,9 +9,7 @@ from index_geant4_docs import Geant4DocumentationIndexer
 def test_geant4_search():
     """Test search functionality with sample queries"""
 
-    indexer = Geant4DocumentationIndexer(
-        es_host="http://localhost:9200", index_name="geant4-documentation"
-    )
+    indexer = Geant4DocumentationIndexer(es_host="http://localhost:9200", index_name="geant4-documentation")
 
     print("=" * 80)
     print("🧪 Geant4 Documentation Search Tests")

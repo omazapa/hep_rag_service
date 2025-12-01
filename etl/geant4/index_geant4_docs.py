@@ -125,9 +125,7 @@ def extract_html_data(
 
         # Extract code snippets
         code_snippets = []
-        for code in soup.find_all(
-            ["code", "pre", "div"], class_=re.compile(r"highlight|literal-block")
-        ):
+        for code in soup.find_all(["code", "pre", "div"], class_=re.compile(r"highlight|literal-block")):
             snippet = code.get_text(strip=True)
             if snippet and len(snippet) > 10:
                 code_snippets.append(snippet)
@@ -204,9 +202,7 @@ def extract_html_data(
                     "doc_id": doc_id,
                     "title": title_text,
                     "content": chunk_content,
-                    "code_snippets": (
-                        code_snippets[:5] if chunk_idx == 0 else []
-                    ),  # Only first chunk gets code
+                    "code_snippets": (code_snippets[:5] if chunk_idx == 0 else []),  # Only first chunk gets code
                     "category": category,
                     "content_type": content_type,
                     "file_path": str(rel_path),
@@ -377,9 +373,7 @@ class Geant4DocumentationIndexer:
             if result:  # result is a list of chunks
                 html_data_list.extend(result)
 
-        logger.info(
-            f"Successfully extracted {len(html_data_list)} document chunks from {len(html_files)} files"
-        )
+        logger.info(f"Successfully extracted {len(html_data_list)} document chunks from {len(html_files)} files")
 
         # Generate embeddings in batches (serial, but batched for efficiency)
         logger.info("Generating embeddings...")

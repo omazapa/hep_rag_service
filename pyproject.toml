@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "Omar Zapata", email = "omazapa@cern.ch"}
+    {name = "Omar Zapata", email = "Omar.Zapata@cern.ch"}
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",

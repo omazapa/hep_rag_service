@@ -165,9 +165,7 @@ def extract_doxygen_html_data(
 
         # Try main content containers
         content_div = (
-            soup.find("div", {"class": "contents"})
-            or soup.find("div", {"id": "doc-content"})
-            or soup.find("body")
+            soup.find("div", {"class": "contents"}) or soup.find("div", {"id": "doc-content"}) or soup.find("body")
         )
 
         if not content_div:
@@ -448,9 +446,7 @@ class Geant4DoxygenIndexer:
             if result:
                 html_data_list.extend(result)
 
-        logger.info(
-            f"Successfully extracted {len(html_data_list)} document chunks from {len(html_files)} files"
-        )
+        logger.info(f"Successfully extracted {len(html_data_list)} document chunks from {len(html_files)} files")
 
         # Generate embeddings in batches
         logger.info("Generating embeddings...")

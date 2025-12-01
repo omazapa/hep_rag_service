@@ -43,9 +43,7 @@ def test_content_quality():
         response = es.search(
             index="root-documentation",
             body={
-                "query": {
-                    "multi_match": {"query": test["query"], "fields": ["title^2", "content"]}
-                },
+                "query": {"multi_match": {"query": test["query"], "fields": ["title^2", "content"]}},
                 "size": 3,
             },
         )
@@ -107,17 +105,12 @@ def test_content_quality():
     print(f"Total indexed documents: {count_response['count']}")
 
     # Sample random documents to check for bad content
-    sample_response = es.search(
-        index="root-documentation", body={"query": {"match_all": {}}, "size": 10}
-    )
+    sample_response = es.search(index="root-documentation", body={"query": {"match_all": {}}, "size": 10})
 
     bad_content_count = 0
     for hit in sample_response["hits"]["hits"]:
         content = hit["_source"].get("content", "")
-        if any(
-            term in content
-            for term in ["Loading...", "Searching...", "This browser is not able to show SVG"]
-        ):
+        if any(term in content for term in ["Loading...", "Searching...", "This browser is not able to show SVG"]):
             bad_content_count += 1
 
     print(f"Documents with UI artifacts (from sample of 10): {bad_content_count}")
