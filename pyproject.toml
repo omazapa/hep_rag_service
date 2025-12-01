@@ -49,10 +49,17 @@ Repository = "https://github.com/omazapa/hep_rag_service"
 Issues = "https://github.com/omazapa/hep_rag_service/issues"
 
 [project.scripts]
+# ROOT commands
+hep-rag-download-root = "etl.root.download_root_docs:main"
 hep-rag-index-root = "etl.root.index_root_docs:main"
 hep-rag-search-root = "etl.root.search_root_docs:main"
+hep-rag-validate-root-urls = "etl.root.validate_urls:main"
+# Geant4 Sphinx commands
+hep-rag-download-geant4 = "etl.geant4.download_geant4_docs:main"
 hep-rag-index-geant4 = "etl.geant4.index_geant4_docs:main"
 hep-rag-search-geant4 = "etl.geant4.search_geant4_docs:main"
+# Geant4 Doxygen commands
+hep-rag-download-geant4-doxygen = "etl.geant4.download_geant4_doxygen:main"
 hep-rag-index-geant4-doxygen = "etl.geant4.index_geant4_doxygen:main"
 hep-rag-search-geant4-doxygen = "etl.geant4.search_geant4_doxygen:main"
 

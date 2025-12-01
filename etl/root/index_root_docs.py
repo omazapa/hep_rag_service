@@ -638,14 +638,46 @@ class ROOTDocumentationIndexer:
 
 def main():
     """Main function to execute indexing"""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Index ROOT documentation into Elasticsearch")
+    parser.add_argument(
+        "--data-path",
+        type=str,
+        default="etl/root/data/root/master",
+        help="Path to ROOT documentation data (default: etl/root/data/root/master)",
+    )
+    parser.add_argument(
+        "--es-host",
+        type=str,
+        default="http://localhost:9200",
+        help="Elasticsearch host URL (default: http://localhost:9200)",
+    )
+    parser.add_argument("--index-name", type=str, default="root-documentation", help="Elasticsearch index name")
+    parser.add_argument(
+        "--model-name",
+        type=str,
+        default="sentence-transformers/all-MiniLM-L6-v2",
+        help="Sentence transformer model name",
+    )
+    parser.add_argument("--enable-chunking", action="store_true", help="Enable document chunking")
+    parser.add_argument("--batch-size", type=int, default=100, help="Batch size for indexing (default: 100)")
+    parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=None,
+        help="Number of parallel workers (default: CPU count)",
+    )
+
+    args = parser.parse_args()
 
     # Configuration
     indexer = ROOTDocumentationIndexer(
-        es_host="http://localhost:9200",  # Docker: localhost:9200, K8s: localhost:30920
-        index_name="root-documentation",
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
-        data_path="data/root/master",
-        enable_chunking=False,  # Set to True to enable chunking
+        es_host=args.es_host,
+        index_name=args.index_name,
+        model_name=args.model_name,
+        data_path=args.data_path,
+        enable_chunking=args.enable_chunking,
     )
 
     # Create index
@@ -653,12 +685,12 @@ def main():
     indexer.create_index()
 
     # Index documents with parallel processing
-    num_workers = cpu_count()
+    num_workers = args.num_workers if args.num_workers else cpu_count()
     logger.info(f"Starting document indexing with {num_workers} CPU cores...")
-    indexer.bulk_index_documents(batch_size=100, num_workers=num_workers)
+    indexer.bulk_index_documents(batch_size=args.batch_size, num_workers=num_workers)
 
     # Statistics
-    stats = indexer.es.count(index="root-documentation")
+    stats = indexer.es.count(index=args.index_name)
     logger.info(f"✓ Total documents indexed: {stats['count']}")
 
     # Search test
