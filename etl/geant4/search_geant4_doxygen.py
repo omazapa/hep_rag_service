@@ -3,14 +3,15 @@
 Search script for Geant4 Doxygen documentation
 """
 
-from index_geant4_doxygen import Geant4DoxygenIndexer
 import sys
+
+from index_geant4_doxygen import Geant4DoxygenIndexer
 
 
 def search_geant4_doxygen(query: str, k: int = 5):
     """
     Search Geant4 Doxygen documentation
-    
+
     Args:
         query: Search query
         k: Number of results to return
@@ -18,66 +19,60 @@ def search_geant4_doxygen(query: str, k: int = 5):
     print("=" * 80)
     print(f"🔍 Searching Geant4 Doxygen Documentation")
     print("=" * 80)
-    
+
     # Initialize indexer
-    indexer = Geant4DoxygenIndexer(
-        es_host="http://localhost:9200",
-        index_name="geant4-doxygen"
-    )
-    
+    indexer = Geant4DoxygenIndexer(es_host="http://localhost:9200", index_name="geant4-doxygen")
+
     print(f"\nQuery: {query}")
     print("-" * 80)
-    
+
     # Search
     results = indexer.search(query, k=k, hybrid=True)
-    
+
     if not results:
         print("❌ No results found")
         return
-    
+
     print(f"\n✓ Found {len(results)} results:\n")
-    
+
     for i, result in enumerate(results, 1):
         print(f"[{i}] {result['title']}")
         print(f"    🎯 Score: {result['score']:.3f}")
         print(f"    📁 Category: {result['category']} | Type: {result['type']}")
         print(f"    🔗 URL: {result['url']}")
         print(f"    📄 Content preview:")
-        
+
         # Show first 300 characters of content
-        content = result['content'][:300].replace('\n', ' ')
+        content = result["content"][:300].replace("\n", " ")
         print(f"       {content}...")
         print()
-    
+
     print("=" * 80)
 
 
 def interactive_search():
     """Interactive search mode"""
-    
-    indexer = Geant4DoxygenIndexer(
-        es_host="http://localhost:9200",
-        index_name="geant4-doxygen"
-    )
-    
+
+    indexer = Geant4DoxygenIndexer(es_host="http://localhost:9200", index_name="geant4-doxygen")
+
     print("=" * 80)
     print("🔍 Geant4 Doxygen Documentation - Interactive Search")
     print("=" * 80)
     print("Type 'exit' to quit\n")
-    
+
     while True:
         try:
             query = input("\n🔍 Your question: ").strip()
-            
-            if query.lower() in ['exit', 'quit', 'salir']:
+
+            if query.lower() in ["exit", "quit", "salir"]:
                 print("Goodbye!")
                 break
-            
+
             if not query:
                 continue
-            
+
             results = indexer.search(query, k=5)
-            
+
             print(f"\n{'─'*80}")
             for i, result in enumerate(results, 1):
                 print(f"\n[{i}] {result['title']}")
@@ -86,7 +81,7 @@ def interactive_search():
                 print(f"    🔗 {result['url']}")
                 print(f"    📄 {result['content'][:300]}...")
             print(f"{'─'*80}")
-            
+
         except KeyboardInterrupt:
             print("\nGoodbye!")
             break

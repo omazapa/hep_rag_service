@@ -1,1 +1,1 @@
-root_dxygen="https://root.cern/doc/master"
+root_dxygen = "https://root.cern/doc/master"
