@@ -31,6 +31,11 @@ dependencies = [
     "tqdm>=4.65.0",
     "requests>=2.28.0",
     "lxml>=4.9.0",
+    # LangChain dependencies
+    "langchain>=0.3.0",
+    "langchain-elasticsearch>=0.3.0",
+    "langchain-huggingface>=0.1.0",
+    "langchain-community>=0.3.0",
 ]
 
 [project.optional-dependencies]
@@ -65,7 +70,7 @@ hep-rag-search-geant4-doxygen = "etl.geant4.search_geant4_doxygen:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["etl*"]
+include = ["etl*", "agents*"]
 exclude = ["etl.*.data*", "etl.*.tests*"]
 
 [tool.black]

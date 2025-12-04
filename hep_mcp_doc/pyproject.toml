@@ -39,6 +39,7 @@ dev = [
 
 [project.scripts]
 hep-mcp-doc = "hep_mcp_doc.server:main"
+hep-mcp-doc-agents = "hep_mcp_doc.server_with_agents:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

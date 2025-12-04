@@ -1,13 +1,19 @@
-# Dependencias para el sistema RAG de ROOT
-# Instalación: pip install -r requirements.txt
+# Dependencies for HEP RAG system
+# Installation: pip install -r requirements.txt
 
 # Elasticsearch
 elasticsearch>=8.0.0
 
-# Embeddings y NLP
+# Embeddings and NLP
 sentence-transformers>=2.2.0
 torch
 transformers
+
+# LangChain ecosystem
+langchain>=1.1.0
+langchain-elasticsearch>=0.4.0
+langchain-huggingface>=1.1.0
+langchain-community>=0.4.1
 
 # Procesamiento de HTML
 beautifulsoup4
