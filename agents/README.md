@@ -41,7 +41,7 @@ This directory contains LangChain-based agents with different personas for inter
 Install required dependencies:
 
 ```bash
-pip install langchain langchain-elasticsearch langchain-huggingface langchain-community
+pip install langchain langchain-elasticsearch langchain-huggingface langchain-community langchain-ollama
 ```
 
 ## 🚀 Usage
@@ -78,9 +78,9 @@ print(result['answer'])
 ```python
 # You can pass any LangChain-compatible LLM
 # For example, using a different Ollama model:
-from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM
 
-llm = Ollama(model="mistral", temperature=0.7)
+llm = OllamaLLM(model="mistral", temperature=0.7)
 
 user_agent = ROOTUserAgent(indexer.as_retriever(search_kwargs={"k": 5}), llm=llm)
 result = user_agent.ask("How do I fit a Gaussian to my histogram?")

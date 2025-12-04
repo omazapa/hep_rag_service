@@ -9,7 +9,12 @@ ROOT documentation, each with specialized knowledge and communication styles.
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain_community.llms import Ollama
+
+try:
+    from langchain_ollama import OllamaLLM as Ollama
+except ImportError:
+    # Fallback to older import for backwards compatibility
+    from langchain_community.llms import Ollama
 
 
 def format_docs(docs):
