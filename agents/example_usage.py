@@ -27,34 +27,40 @@ def main():
     print("ROOT USER AGENT")
     print("=" * 80)
 
-    user_agent = ROOTUserAgent(indexer)
+    user_agent = ROOTUserAgent(indexer.as_retriever(search_kwargs={"k": 5}))
     user_response = user_agent.ask(user_question)
 
     print(f"\nQuestion: {user_question}")
     print(f"\nAnswer:\n{user_response['answer']}")
-    print(f"\nSources: {len(user_response['sources'])} documents")
+    print(f"\n📚 Sources ({len(user_response['sources'])} documents):")
+    for i, source in enumerate(user_response['sources'], 1):
+        print(f"  [{i}] {source['title']} - {source['url']}")
 
     print("\n" + "=" * 80)
     print("ROOT DEVELOPER AGENT")
     print("=" * 80)
 
-    developer_agent = ROOTDeveloperAgent(indexer)
+    developer_agent = ROOTDeveloperAgent(indexer.as_retriever(search_kwargs={"k": 7}))
     developer_response = developer_agent.ask(developer_question)
 
     print(f"\nQuestion: {developer_question}")
     print(f"\nAnswer:\n{developer_response['answer']}")
-    print(f"\nSources: {len(developer_response['sources'])} documents")
+    print(f"\n📚 Sources ({len(developer_response['sources'])} documents):")
+    for i, source in enumerate(developer_response['sources'], 1):
+        print(f"  [{i}] {source['title']} - {source['url']}")
 
     print("\n" + "=" * 80)
     print("ROOT TEACHING AGENT")
     print("=" * 80)
 
-    teaching_agent = ROOTTeachingAgent(indexer)
+    teaching_agent = ROOTTeachingAgent(indexer.as_retriever(search_kwargs={"k": 5}))
     teaching_response = teaching_agent.ask(teaching_question)
 
     print(f"\nQuestion: {teaching_question}")
     print(f"\nAnswer:\n{teaching_response['answer']}")
-    print(f"\nSources: {len(teaching_response['sources'])} documents")
+    print(f"\n📚 Sources ({len(teaching_response['sources'])} documents):")
+    for i, source in enumerate(teaching_response['sources'], 1):
+        print(f"  [{i}] {source['title']} - {source['url']}")
 
 
 if __name__ == "__main__":

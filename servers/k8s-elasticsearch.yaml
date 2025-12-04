@@ -16,7 +16,7 @@ data:
     discovery.type: single-node
     xpack.security.enabled: false
     xpack.security.enrollment.enabled: false
-    # Configuración para búsqueda vectorial
+    # Configuration for vector search
     xpack.ml.enabled: true
 ---
 apiVersion: v1

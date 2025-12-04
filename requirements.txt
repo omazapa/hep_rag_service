@@ -15,14 +15,14 @@ langchain-elasticsearch>=0.4.0
 langchain-huggingface>=1.1.0
 langchain-community>=0.4.1
 
-# Procesamiento de HTML
+# HTML processing
 beautifulsoup4
 lxml
 
-# Utilidades
+# Utilities
 tqdm
 python-dotenv
 
-# Opcional: para notebooks
+# Optional: for notebooks
 jupyter
 ipykernel

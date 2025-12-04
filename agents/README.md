@@ -58,14 +58,19 @@ indexer = LangChainHEPIndexer(
 )
 
 # User Agent - Practical help
-user_agent = ROOTUserAgent(indexer)
-response = user_agent.ask("How do I create a histogram?")
-print(response['answer'])
+user_agent = ROOTUserAgent(indexer.as_retriever(search_kwargs={"k": 5}))
+result = user_agent.ask("How do I create a histogram?")
+
+# Access answer and sources
+print(result['answer'])
+print("\nSources:")
+for source in result['sources']:
+    print(f"- {source['title']}: {source['url']}")
 
 # Developer Agent - Technical details
-dev_agent = ROOTDeveloperAgent(indexer)
-response = dev_agent.ask("What are the performance implications of TTree vs RDataFrame?")
-print(response['answer'])
+dev_agent = ROOTDeveloperAgent(indexer.as_retriever(search_kwargs={"k": 7}))
+result = dev_agent.ask("What are the performance implications of TTree vs RDataFrame?")
+print(result['answer'])
 ```
 
 ### Using Custom LLM
@@ -77,8 +82,31 @@ from langchain_community.llms import Ollama
 
 llm = Ollama(model="mistral", temperature=0.7)
 
-user_agent = ROOTUserAgent(indexer, llm=llm)
-response = user_agent.ask("How do I fit a Gaussian to my histogram?")
+user_agent = ROOTUserAgent(indexer.as_retriever(search_kwargs={"k": 5}), llm=llm)
+result = user_agent.ask("How do I fit a Gaussian to my histogram?")
+print(result['answer'])
+```
+
+### Agent Response Format
+
+All agents return a dictionary with two keys:
+- `answer`: The generated response from the LLM
+- `sources`: List of source documents used, each containing:
+  - `title`: Document title
+  - `url`: Document URL
+  - `content`: Preview of the content (first 200 chars)
+
+```python
+result = agent.ask("Your question here")
+
+# Access the answer
+print(result['answer'])
+
+# Access the sources
+for i, source in enumerate(result['sources'], 1):
+    print(f"[{i}] {source['title']}")
+    print(f"    URL: {source['url']}")
+    print(f"    Preview: {source['content']}")
 ```
 
 ### Complete Example
@@ -118,7 +146,10 @@ class MyCustomAgent(ROOTUserAgent):
 
 ```python
 # Retrieve more context for complex questions
-response = developer_agent.ask("Complex question...", k=10)
+# Pass retriever with custom k parameter
+retriever = indexer.as_retriever(search_kwargs={"k": 10})
+developer_agent = ROOTDeveloperAgent(retriever)
+result = developer_agent.ask("Complex question...")
 ```
 
 ## 📚 Architecture

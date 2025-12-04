@@ -14,7 +14,7 @@ from langchain_community.llms import Ollama
 
 def format_docs(docs):
     """Format retrieved documents for the prompt."""
-    return "\n\n".join([f"Source: {doc.metadata.get('source', 'Unknown')}\n{doc.page_content}" for doc in docs])
+    return "\n\n".join([f"Source [{i+1}]: {doc.metadata.get('title', 'Unknown')} ({doc.metadata.get('url', 'No URL')})\n{doc.page_content}" for i, doc in enumerate(docs)])
 
 
 class ROOTUserAgent:
@@ -72,7 +72,8 @@ Documentation Context:
 
 User Question: {question}
 
-Provide a helpful, practical answer with code examples when appropriate.""",
+Provide a helpful, practical answer with code examples when appropriate.
+At the end of your answer, reference the sources you used by mentioning them as [1], [2], etc.""",
                 ),
             ]
         )
@@ -85,7 +86,7 @@ Provide a helpful, practical answer with code examples when appropriate.""",
             | StrOutputParser()
         )
 
-    def ask(self, question: str) -> str:
+    def ask(self, question: str) -> dict:
         """
         Ask a question to the ROOT User Agent.
 
@@ -93,9 +94,28 @@ Provide a helpful, practical answer with code examples when appropriate.""",
             question: The user's question about ROOT
 
         Returns:
-            str: The agent's response
+            dict: Dictionary with 'answer' and 'sources' keys
         """
-        return self.chain.invoke(question)
+        # Get the documents first for sources
+        docs = self.retriever.invoke(question)
+        
+        # Generate the answer
+        answer = self.chain.invoke(question)
+        
+        # Format sources
+        sources = [
+            {
+                "title": doc.metadata.get("title", "Unknown"),
+                "url": doc.metadata.get("url", "No URL"),
+                "content": doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content
+            }
+            for doc in docs
+        ]
+        
+        return {
+            "answer": answer,
+            "sources": sources
+        }
 
 
 class ROOTDeveloperAgent:
@@ -158,7 +178,8 @@ Documentation Context:
 
 Developer Question: {question}
 
-Provide a detailed, technical answer that considers performance, architecture, and best practices.""",
+Provide a detailed, technical answer that considers performance, architecture, and best practices.
+At the end of your answer, reference the sources you used by mentioning them as [1], [2], etc.""",
                 ),
             ]
         )
@@ -171,7 +192,7 @@ Provide a detailed, technical answer that considers performance, architecture, a
             | StrOutputParser()
         )
 
-    def ask(self, question: str) -> str:
+    def ask(self, question: str) -> dict:
         """
         Ask a question to the ROOT Developer Agent.
 
@@ -179,9 +200,28 @@ Provide a detailed, technical answer that considers performance, architecture, a
             question: The developer's technical question about ROOT
 
         Returns:
-            str: The agent's expert response
+            dict: Dictionary with 'answer' and 'sources' keys
         """
-        return self.chain.invoke(question)
+        # Get the documents first for sources
+        docs = self.retriever.invoke(question)
+        
+        # Generate the answer
+        answer = self.chain.invoke(question)
+        
+        # Format sources
+        sources = [
+            {
+                "title": doc.metadata.get("title", "Unknown"),
+                "url": doc.metadata.get("url", "No URL"),
+                "content": doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content
+            }
+            for doc in docs
+        ]
+        
+        return {
+            "answer": answer,
+            "sources": sources
+        }
 
 
 class ROOTTeachingAgent:
@@ -247,7 +287,8 @@ Documentation Context:
 
 Student Question: {question}
 
-Teach this concept in a clear, progressive way with examples that build understanding.""",
+Teach this concept in a clear, progressive way with examples that build understanding.
+At the end of your answer, reference the sources you used by mentioning them as [1], [2], etc.""",
                 ),
             ]
         )
@@ -260,7 +301,7 @@ Teach this concept in a clear, progressive way with examples that build understa
             | StrOutputParser()
         )
 
-    def ask(self, question: str) -> str:
+    def ask(self, question: str) -> dict:
         """
         Ask a question to the ROOT Teaching Agent.
 
@@ -268,6 +309,25 @@ Teach this concept in a clear, progressive way with examples that build understa
             question: The student's question about ROOT
 
         Returns:
-            str: The agent's educational response
+            dict: Dictionary with 'answer' and 'sources' keys
         """
-        return self.chain.invoke(question)
+        # Get the documents first for sources
+        docs = self.retriever.invoke(question)
+        
+        # Generate the answer
+        answer = self.chain.invoke(question)
+        
+        # Format sources
+        sources = [
+            {
+                "title": doc.metadata.get("title", "Unknown"),
+                "url": doc.metadata.get("url", "No URL"),
+                "content": doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content
+            }
+            for doc in docs
+        ]
+        
+        return {
+            "answer": answer,
+            "sources": sources
+        }
